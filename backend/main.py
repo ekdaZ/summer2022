@@ -19,7 +19,7 @@ class Item:
         }
 
 
-items = [Item('salt', 10, 0), Item('pepper', 5, 1), Item('Carry', 5, 2)]
+items = [Item('salt', 10, 0), Item('pepper', 5, 1), Item('carry', 5, 2)]
 
 
 @app.route("/")
