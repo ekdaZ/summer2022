@@ -38,22 +38,31 @@ class Shop:
         self.name = name
         self.item_list = []
 
+    def serialize(self):
+        {
+        'name': self.name,
+        'item_list': self.item_list
+        }
+
 descriptors_salt = Descriptors('Very salty', 0.1)
 items = [Item('salt', 10, 0, descriptors_salt.serialize())]
-shops =[Shop('Powders')]
+shop1 =Shop('Powders')
 
-shops[0].item_list.append(e for e in items)
+shop1.item_list.append(print(e.serialize()) for e in items)
+
+print(jsonify(shop1.serialize()))
+
 
 # , Item('pepper', 5, 1), Item('carry', 5, 2)
 
-@app.route('/<shop_name>/')
-def shop(shop_name):
-    for e in shops:
-        if e.name == shop_name:
-            print(e.item_list[0])
-            for x in e.item_list:
-                x = x.serialize()
-            return e
+# @app.route('/<shop_name>/')
+# def shop(shop_name):
+
+
+
+@app.route('/')
+def all_items():
+    return jsonify(data=[e.serialize() for e in items])
 
 
 @app.route('/<int:id>/')
@@ -66,7 +75,7 @@ def item(id):
 
 
 @app.route('/<int:id>/edit/', methods=['POST'])
-def edit(id):
+def edit_item(id):
     request_data = request.get_json()
     for index, e in enumerate(items):
         if e.id == id:
@@ -88,7 +97,7 @@ def edit(id):
 
 
 @app.route('/<int:id>/', methods=['DELETE'])
-def delete(id):
+def delete_item(id):
     for e in items:
         if e.id == id:
             items.remove(e)
@@ -97,7 +106,7 @@ def delete(id):
 
 
 @app.route('/add/', methods=['POST'])
-def add():
+def add_item():
     request_data = request.get_json()
     if 'name' in request_data and 'price' in request_data:
         item = Item(
