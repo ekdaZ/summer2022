@@ -1,4 +1,5 @@
 import json
+from pydoc import describe
 from flask import Flask, request
 from flask import jsonify
 
@@ -6,26 +7,53 @@ app = Flask(__name__)
 
 
 class Item:
-    def __init__(self, name, price, id):
+    def __init__(self, name, price, id, descriptors):
         self.name = name
         self.price = price
         self.id = id
+        self.descriptors = descriptors
 
     def serialize(self):
         return {
             'name': self.name,
             'price': self.price,
             'id': self.id,
+            'descriptors': self.descriptors
         }
 
 
-items = [Item('salt', 10, 0), Item('pepper', 5, 1), Item('carry', 5, 2)]
+class Descriptors:
+    def __init__(self, description, mass):
+        self.description = description
+        self.mass = mass
+        
+    def serialize(self):
+        return {
+            'description': self.description,
+            'mass': self.mass
+        }
 
+class Shop:
+    def __init__(self, name):
+        self.name = name
+        self.item_list = []
 
-@app.route("/")
-def hello_world():
+descriptors_salt = Descriptors('Very salty', 0.1)
+items = [Item('salt', 10, 0, descriptors_salt.serialize())]
+shops =[Shop('Powders')]
 
-    return jsonify(data=[e.serialize() for e in items])
+shops[0].item_list.append(e for e in items)
+
+# , Item('pepper', 5, 1), Item('carry', 5, 2)
+
+@app.route('/<shop_name>/')
+def shop(shop_name):
+    for e in shops:
+        if e.name == shop_name:
+            print(e.item_list[0])
+            for x in e.item_list:
+                x = x.serialize()
+            return e
 
 
 @app.route('/<int:id>/')
